@@ -1,3 +1,6 @@
+<?php
+include "db_connection.php";
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,13 +18,24 @@
 <div class="container">
   <h2>Stacked form</h2>
   <form action="/action_page.php">
-    <div class="form-group">
-      <br>Plan1 - 1000 <input type="radio" value="1000" name="plan" class="plan" checked/>
-      <br>Plan2 - 2000 <input type="radio" value="2000" name="plan" class="plan" />
-      <br>Plan3 - 3000 <input type="radio" value="3000" name="plan" class="plan" />
-      <br>Plan4 - 4000 <input type="radio" value="4000" name="plan" class="plan" />
-      
-    </div>
+  	<?php 
+  	
+  		$sql = "SELECT * FROM plan";
+		$result = mysqli_query($conn, $sql);
+		
+		if (mysqli_num_rows($result) > 0) {
+		  // output data of each row
+		  while($row = mysqli_fetch_assoc($result)) {
+		 echo "<div class='form-group'>
+		      $row[plan] <input type='radio' value='$row[id]' name='plan' class='plan' checked/>
+		      </div>";
+		  }
+		} else {
+		  echo "0 results";
+		}
+
+mysqli_close($conn);
+  	?>
     <div class="form-group">
       <br>1-Month 1000 - 1000<input type="radio" value="1" name="month" class="month" checked/>
       <br>3-Month 900 - 2700<input type="radio" value="3" name="month" class="month" />
@@ -41,25 +55,14 @@
     	month = $('.month:checked').val();
     	month = parseInt(month)
     	plan = parseInt(plan)
-    	total = 0;
-    	
-    	switch(month) {
-		  case 1:
-		    total = month*plan;
-		    break;
-		  case 3:
-		    total = month*(plan-100);
-		    break;
-		  case 6:
-		    total = month*(plan-200);
-		    break;
-		  case 12:
-		    total = month*(plan-400);
-		    break;
-		  default:
-		   total = month*plan;
-		}
-		$("#total_amount").html(total);
+    	$.ajax({
+	        url: "ajax.php",
+	        get: "POST",
+	        data: { plan: plan, month: month  },
+	        success: function(html) {
+	            $("#total_amount").html(html);
+	        }
+	    });
 	});
 	
 	$(document).on('change', '.month', function() {
@@ -67,25 +70,14 @@
     	plan = $('.plan:checked').val();
     	month = parseInt(month)
     	plan = parseInt(plan)
-    	total = 0;
-    	switch(month) {
-		  case 1:
-		    total = month*plan;
-		    break;
-		  case 3:
-		    total = month*(plan-100);
-		    break;
-		  case 6:
-		    total = month*(plan-200);
-		    break;
-		  case 12:
-		    total = month*(plan-400);
-		    break;
-		  default:
-		   total = month*plan;
-		}
-    	
-    	$("#total_amount").html(total);
+    	$.ajax({
+	        url: "ajax.php",
+	        get: "POST",
+	        data: { plan: plan, month: month  },
+	        success: function(html) {
+	            $("#total_amount").html(html);
+	        }
+	    });
 	});
 	
 
